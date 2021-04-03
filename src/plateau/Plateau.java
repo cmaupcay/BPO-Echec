@@ -1,12 +1,20 @@
 package plateau;
 
+import pieces.*;
+
 public class Plateau {
 
 	private static final int DIMENSION = 8;
-	
+	private Piece[][] tab;
+
 	// AFFICHAGE
 	private static final String DECALAGE_GAUCHE = "   ";
 	private static final String SEPARATEUR_HORIZONTAL = " | ";
+
+	// CONSTRUCTEUR
+	public Plateau(){
+		tab = new Piece[DIMENSION][DIMENSION];
+	}
 
 	private static String ligneLettres()
 	{
@@ -68,5 +76,12 @@ public class Plateau {
 		
 		return str.toString();
 	}
-	
+
+	public void set(Coord c, Piece piece){
+		tab[c.getX()][c.getY()] = piece;
+	}
+
+	public int getDimension(){
+		return this.DIMENSION;
+	}
 }
