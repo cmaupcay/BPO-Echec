@@ -1,35 +1,67 @@
 package pieces;
 
-import plateau.*;
+import joueurs.IJoueur;
+import plateau.Case;
+import plateau.Plateau;
 
-public class Piece {
-    private Coord pos;
-    private char symbole;
+public abstract class Piece implements IPiece {
 
-    public Piece(Coord coord, char c){
-        this.pos = coord;
-        this.symbole = c;
-    }
+	private Couleur couleur;
+	private Case refCase; // Reference à la case actuellement occupée
+	
+	@Override
+	public Couleur getCouleur() { 
+		return this.couleur; 
+	}
 
-    public void deplacer(Coord c, Plateau p) throws Exception {
-        if(!deplacementPossible(c, p))
-            throw new Exception("Déplacement impossible");
-        p.set(c, this);
-    }
+	public Case getCase() {
+		return refCase;
+	}
+	protected Piece(Couleur couleur, Case depart)
+	{
+		this.couleur = couleur;
+		
+		// Ajouter une erreur si la case de depart est occupée
+		this.refCase = depart;
+		this.refCase.occuper(this);
+	}
+	
+	public boolean mouvementValide(Case destination, Plateau plateau){
+		return true;
+	}
+	
+	@Override
+	public boolean mouvement(Case destination, Plateau plateau)
+	{
+		// La case destination est la case actuellement occupée
+		if (destination.getCoord().equals(this.refCase.getCoord())) return false;
+		
+		// La case destination est occupée par une pièce de la même couleur
+		if (destination.occupant().getCouleur() == this.couleur) return false;
+		
+		if (this.mouvementValide(destination, plateau))
+		{
+			this.refCase.quitter(); // Quitter la case courante
+			this.refCase = destination; // Modifier la case courante par la case destination
+			this.refCase.occuper(this); // Occuper la case destination
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	protected abstract char caractere(); // Caractère propre à chaque pièce
+	@Override
+	public char afficher()
+	{
+		char c = this.caractere();
+		if (this.couleur == Couleur.BLANC)
+			c = Character.toUpperCase(c);
+		return c;
+	}
 
-    public boolean deplacementPossible(Coord c, Plateau p){
-        return (c.getX() > 0 && c.getY() > 0 && c.getY() < p.getDimension() && c.getX() < p.getDimension());
-    }
-
-    public int getXPos(){
-        return this.pos.getX();
-    }
-
-    public int getYPos(){
-        return this.pos.getY();
-    }
-
-    public String toString(){
-        return "" + symbole;
-    }
+	@Override
+	public boolean estEnEchec(IJoueur j_adverse, Plateau plateau){
+		return false;
+	}
 }

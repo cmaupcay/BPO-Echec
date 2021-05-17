@@ -1,15 +1,23 @@
 package pieces;
 
+import plateau.Case;
 import plateau.Coord;
 import plateau.Plateau;
 
 public class Tour extends Piece {
-    public Tour(Coord c, boolean equipeBlanche){
-        super(c, equipeBlanche ? 'T' : 't');
+    public Tour (Couleur couleur, Case depart) {
+        super(couleur, depart);
     }
 
     @Override
-    public boolean deplacementPossible(Coord c, Plateau p){
-        return super.deplacementPossible(c,p) && (c.getX() == this.getXPos() || c.getY() == this.getYPos());
+    public char caractere() {
+        return getCouleur() == Couleur.BLANC ? 'T' : 't';
+    }
+
+    @Override
+    public boolean mouvementValide(Case destination, Plateau plateau) {
+        return  Coord.verifierCoordonnee(destination.getCoord())
+                && ((destination.getCoord().getX() == this.getCase().getCoord().getX())
+                    ^ destination.getCoord().getY() == this.getCase().getCoord().getY());
     }
 }
